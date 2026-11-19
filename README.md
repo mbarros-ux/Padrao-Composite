@@ -76,16 +76,22 @@ classDiagram
 
 #### Vantagens (Fatos)
 * **Princípio Aberto/Fechado (OCP):** É possível adicionar novas classes de folhas (ex: `Vulnerabilidade`) ou compostos (ex: `ModuloSistema`) sem alterar o código do cliente (`RelatorioSeguranca`).
+  
 * **Simplicidade para o Cliente:** O código cliente se torna mais simples, pois trata todos os elementos de forma uniforme através da interface `ElementoSeguranca`, eliminando blocos `if/else` ou `instanceof`.
+  
 * **Hierarquias Recursivas:** Permite criar estruturas de árvore de complexidade arbitrária de forma natural.
 
 #### Pontos Cegos e Contrapontos (Onde o padrão exige cuidado)
 1. **Risco de Violação do LSP (Princípio da Substituição de Liskov):**
    * **Fato:** Muitos tutoriais colocam os métodos `add()` e `remove()` na interface base (`ElementoSeguranca`).
+     
    * **Contraponto:** Se isso fosse feito, a classe `Ameaca` (Folha) seria obrigada a implementar esses métodos, geralmente lançando `UnsupportedOperationException`. Isso viola o LSP, pois uma `Ameaca` não pode ser substituída por um `ElementoSeguranca` genérico sem quebrar o comportamento.
+     
    * **Nota:** A implementação deste projeto (espelhando a do professor) está **correta** ao colocar `addElemento()` *apenas* na classe `GrupoAmeacas`, preservando a integridade do LSP.
+     
 2. **O Perigo da Recursão Infinita (`StackOverflow`):**
    * **Fato:** O método `getDetalhes()` do `GrupoAmeacas` é recursivo.
+     
    * **Contraponto:** O código atual não previne **referências cíclicas**. Se você fizer `grupoA.addElemento(grupoB)` e depois `grupoB.addElemento(grupoA)`, chamar `getDetalhes()` entrará em loop infinito até estourar a memória. Em sistemas de produção, é necessário implementar verificação de ciclos no método `addElemento`.
 
 ---
